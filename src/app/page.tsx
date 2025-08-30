@@ -1,103 +1,239 @@
+import { createOrder } from "@/actions/order";
+import OrderForm from "@/components/orderform";
 import Image from "next/image";
 
-export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+const IMAGES = {
+	hero1:
+		"https://assets.lightfunnels.com/cdn-cgi/image/width=3840,quality=80,format=auto/https://assets.lightfunnels.com/account-31635/images_library/3886ba2d-5a93-448c-ba14-2b2a84e0c8a6.1 (1).png",
+	hero2:
+		"https://assets.lightfunnels.com/cdn-cgi/image/width=3840,quality=80,format=auto/https://assets.lightfunnels.com/account-31635/images_library/8adf729b-122c-4fb9-9699-7315d42d88a6.2 (2).png",
+	hero3:
+		"https://assets.lightfunnels.com/cdn-cgi/image/width=3840,quality=80,format=auto/https://assets.lightfunnels.com/account-31635/images_library/6676f63c-6702-4f48-a794-516d130c04dc.3 (1).png",
+	hero4:
+		"https://assets.lightfunnels.com/cdn-cgi/image/width=3840,quality=80,format=auto/https://assets.lightfunnels.com/account-31635/images_library/f184db7c-177f-4fbb-a46a-7b033529ee18.4.png",
+	secA: "https://assets.lightfunnels.com/cdn-cgi/image/width=3840,quality=80,format=auto/https://assets.lightfunnels.com/account-31635/images_library/142ee13c-fe48-4530-8911-dadb74fc06cd.5.png",
+	blockTop:
+		"https://assets.lightfunnels.com/cdn-cgi/image/width=3840,quality=80,format=auto/https://assets.lightfunnels.com/account-31635/images_library/eab32024-18fa-44ca-906e-dba5a068ef1c.6 (2).png",
+	blockSticker:
+		"https://assets.lightfunnels.com/cdn-cgi/image/width=3840,quality=80,format=auto/https://assets.lightfunnels.com/account-31635/images_library/dc2c82b4-fb9e-4822-8399-47f32f8bab7b.7.png",
+	blockGrid1:
+		"https://assets.lightfunnels.com/cdn-cgi/image/width=3840,quality=80,format=auto/https://assets.lightfunnels.com/account-31635/images_library/4502e032-47c9-4976-b6cb-0ebed19a43b3.8.png",
+	blockGrid2:
+		"https://assets.lightfunnels.com/cdn-cgi/image/width=3840,quality=80,format=auto/https://assets.lightfunnels.com/account-31635/images_library/18341e29-8195-4b3f-a9e8-af092a120e87.9.png",
+	blockGrid3:
+		"https://assets.lightfunnels.com/cdn-cgi/image/width=3840,quality=80,format=auto/https://assets.lightfunnels.com/account-31635/images_library/007ea52b-454e-4de4-9df2-44e8f4ecc8e2.rachaqati.shop (3).png",
+	blockGif:
+		"https://assets.lightfunnels.com/account-31635/images_library/cf58f223-85f7-4611-a891-a7c88476fd86.7eNc9bc0Rmsgoe33F34l73WZEdeD8r4OT3RZ8EuX (1).gif",
+	blockWide1:
+		"https://assets.lightfunnels.com/cdn-cgi/image/width=3840,quality=80,format=auto/https://assets.lightfunnels.com/account-31635/images_library/2e60ba86-eae3-4285-80f0-1e8dee91b263.rachaqati.shop (6) (1).png",
+	blockWide2:
+		"https://assets.lightfunnels.com/cdn-cgi/image/width=3840,quality=80,format=auto/https://assets.lightfunnels.com/account-31635/images_library/38cbf1a7-aba4-4aea-ac31-0a41a0650117.rachaqati.shop (6) (2).png",
+	blockEnd1:
+		"https://assets.lightfunnels.com/cdn-cgi/image/width=3840,quality=80,format=auto/https://assets.lightfunnels.com/account-31635/images_library/db6e9b9f-7807-44f7-8584-d6e101607f31.20.png",
+	blockEnd2:
+		"https://assets.lightfunnels.com/cdn-cgi/image/width=3840,quality=80,format=auto/https://assets.lightfunnels.com/account-31635/images_library/455c6093-a0ec-40ec-80ac-b3a1340012ad.21.png",
+	blockEnd3:
+		"https://assets.lightfunnels.com/cdn-cgi/image/width=3840,quality=80,format=auto/https://assets.lightfunnels.com/account-31635/images_library/2f312a88-f37e-4a80-b438-63a0731b4238.12.png",
+	blockEnd4:
+		"https://assets.lightfunnels.com/cdn-cgi/image/width=3840,quality=80,format=auto/https://assets.lightfunnels.com/account-31635/images_library/94aee1e7-ece6-4d3c-9bf0-bd2675e619a7.SweetSweat - UI-22.png",
+};
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+export default function Page() {
+	return (
+		<main className="bg-white text-black">
+			{/* Hero */}
+			<section>
+				<section>
+					<Image
+						src={IMAGES.hero1}
+						alt=""
+						width={3840}
+						height={2160}
+						sizes="100vw"
+						className="w-full h-auto"
+						priority
+					/>
+					<Image
+						src={IMAGES.hero2}
+						alt=""
+						width={3840}
+						height={2160}
+						sizes="100vw"
+						className="w-full h-auto"
+					/>
+					<Image
+						src={IMAGES.hero3}
+						alt=""
+						width={3840}
+						height={2160}
+						sizes="100vw"
+						className="w-full h-auto"
+					/>
+					<Image
+						src={IMAGES.hero4}
+						alt=""
+						width={3840}
+						height={2160}
+						sizes="100vw"
+						className="w-full h-auto"
+					/>
+				</section>
+			</section>
+
+			{/* Order form (server action) */}
+			<section id="buy">
+				<OrderForm action={createOrder} />
+			</section>
+
+			{/* Banner */}
+			<section>
+				<Image
+					src={IMAGES.secA}
+					alt=""
+					width={3840}
+					height={2160}
+					sizes="100vw"
+					className="w-full h-auto"
+				/>
+				<div className="flex justify-center">
+					<a href="#buy">اشتر الآن</a>
+				</div>
+			</section>
+
+			<section>
+				<Image
+					src={IMAGES.blockTop}
+					alt=""
+					width={3840}
+					height={2160}
+					sizes="100vw"
+					className="w-full h-auto"
+				/>
+
+				<iframe
+					className="w-full aspect-video"
+					src="https://player.vimeo.com/video/1083143870?h=7e2e3df1d5&loop=0&title=0"
+					allow="autoplay; fullscreen"
+				/>
+
+				<Image
+					src={IMAGES.blockSticker}
+					alt=""
+					width={3840}
+					height={2160}
+					sizes="100vw"
+					className="w-full h-auto"
+				/>
+
+				<div className="grid md:grid-cols-3">
+					<Image
+						src={IMAGES.blockGrid1}
+						alt=""
+						width={3840}
+						height={2160}
+						sizes="(min-width: 768px) 33vw, 100vw"
+						className="w-full h-auto"
+					/>
+					<Image
+						src={IMAGES.blockGrid2}
+						alt=""
+						width={3840}
+						height={2160}
+						sizes="(min-width: 768px) 33vw, 100vw"
+						className="w-full h-auto"
+					/>
+					<Image
+						src={IMAGES.blockGrid3}
+						alt=""
+						width={3840}
+						height={2160}
+						sizes="(min-width: 768px) 33vw, 100vw"
+						className="w-full h-auto"
+					/>
+				</div>
+
+				{/* Animated GIF — keep original to preserve animation */}
+				<Image
+					src={IMAGES.blockGif}
+					alt=""
+					width={1200}
+					height={1200}
+					sizes="100vw"
+					className="w-full h-auto"
+					unoptimized
+				/>
+
+				<Image
+					src={IMAGES.blockWide1}
+					alt=""
+					width={3840}
+					height={2160}
+					sizes="100vw"
+					className="w-full h-auto"
+				/>
+
+				<iframe
+					className="w-full aspect-video"
+					src="https://player.vimeo.com/video/1083143898?h=edf22c7235&loop=0&title=0"
+				/>
+
+				<Image
+					src={IMAGES.blockWide2}
+					alt=""
+					width={3840}
+					height={2160}
+					sizes="100vw"
+					className="w-full h-auto"
+				/>
+
+				<iframe
+					className="w-full aspect-video"
+					src="https://player.vimeo.com/video/1083143882?h=08d750cf70&loop=0&title=0"
+				/>
+
+				<Image
+					src={IMAGES.blockEnd1}
+					alt=""
+					width={3840}
+					height={2160}
+					sizes="100vw"
+					className="w-full h-auto"
+				/>
+				<Image
+					src={IMAGES.blockEnd2}
+					alt=""
+					width={3840}
+					height={2160}
+					sizes="100vw"
+					className="w-full h-auto"
+				/>
+				<Image
+					src={IMAGES.blockEnd3}
+					alt=""
+					width={3840}
+					height={2160}
+					sizes="100vw"
+					className="w-full h-auto"
+				/>
+				<Image
+					src={IMAGES.blockEnd4}
+					alt=""
+					width={3840}
+					height={2160}
+					sizes="100vw"
+					className="w-full h-auto"
+				/>
+			</section>
+			{/* Footer */}
+			<footer>
+				<div className="flex justify-between">
+					<nav className="flex gap-4">
+						<a href="#buy">اتصل بنا</a>
+						<a href="#buy">سياسة الاسترداد</a>
+					</nav>
+					<div>.جميع الحقوق محفوظة .Sweet Sweat Co 2025 ©</div>
+				</div>
+			</footer>
+		</main>
+	);
 }
