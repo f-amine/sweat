@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -27,6 +28,21 @@ export default function RootLayout({
 			<body
 				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
 			>
+				{/* Snap Pixel base loader */}
+				<Script id="snap-pixel-loader" strategy="afterInteractive">
+					{`
+					(function(e,t,n){if(e.snaptr)return;var a=e.snaptr=function(){a.handleRequest?a.handleRequest.apply(a,arguments):a.queue.push(arguments)};a.queue=[];var s='script';r=t.createElement(s);r.async=!0;r.src=n;var u=t.getElementsByTagName(s)[0];u.parentNode.insertBefore(r,u);})(window,document,'https://sc-static.net/scevent.min.js');
+					`}
+				</Script>
+				{/* Snap Pixel init and page view */}
+				<Script id="snap-pixel-init" strategy="afterInteractive">
+					{`
+					try {
+					  snaptr('init', '586b0124-18f4-40da-abd5-ff7c40712ef4');
+					  snaptr('track', 'PAGE_VIEW');
+					} catch (e) { /* no-op */ }
+					`}
+				</Script>
 				{children}
 			</body>
 		</html>

@@ -2,6 +2,7 @@
 
 import { CreateOrderState } from "@/actions/order";
 import { useMemo, useState, useActionState } from "react";
+import { phone as normalizePhone } from "phone";
 
 export type Bundle = 1 | 2 | 3;
 const PRICES: Record<
@@ -34,8 +35,32 @@ export default function OrderForm({
 
 	const [state, formAction, pending] = useActionState(action, undefined);
 
+	// Wrap formAction to normalize phone and track LEAD to Snap
+	async function onSubmit(formData: FormData) {
+		// Normalize phone number for KSA
+		const raw = String(formData.get("phone") || "");
+		const result = normalizePhone(raw, { country: "SA" });
+		if (result.isValid && result.phoneNumber) {
+			formData.set("phone", result.phoneNumber);
+		}
+
+		// Fire Snap LEAD with normalized phone if available
+		try {
+			// @ts-ignore
+			if (typeof window !== "undefined" && window.snaptr) {
+				// @ts-ignore
+				window.snaptr("track", "LEAD", {
+					user_phone_number: result.isValid && result.phoneNumber ? result.phoneNumber : raw,
+				});
+			}
+		} catch {}
+
+		// Continue to server action
+		return formAction(formData);
+	}
+
 	return (
-		<form action={formAction} className="bg-[#FFE9EC]">
+		<form action={onSubmit} className="bg-[#FFE9EC]">
 			<input type="hidden" name="bundle" value={String(bundle)} />
 			<input type="hidden" name="quantity" value={String(qty)} />
 
