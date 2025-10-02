@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Script from "next/script";
+import { AppToaster } from "@/components/toaster";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -43,6 +44,7 @@ export default function RootLayout({
 					} catch (e) { /* no-op */ }
 					`}
 				</Script>
+				<AppToaster />
 				{children}
 			</body>
 		</html>

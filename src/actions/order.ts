@@ -24,7 +24,7 @@ export async function createOrder(
   formData: FormData,
 ) {
   const values = Object.fromEntries(formData) as Record<string, string>;
-  const parsed = OrderSchema.parse({
+  const parsed = OrderSchema.safeParse({
     firstName: values.firstName,
     phone: values.phone,
     address: values.address,
@@ -32,34 +32,54 @@ export async function createOrder(
     quantity: values.quantity,
   });
 
-  const unitPrice = PRICES[parsed.bundle as 1 | 2 | 3];
-  const total = unitPrice * parsed.quantity;
+  if (!parsed.success) {
+    console.warn("Order validation failed", parsed.error.flatten());
+    return {
+      ok: false,
+      error: "تعذر إتمام الطلب. يرجى التحقق من صحة البيانات والمحاولة مرة أخرى.",
+    } satisfies CreateOrderState;
+  }
 
-  const order = await prisma.order.create({
-    data: {
-      firstName: parsed.firstName,
-      phone: parsed.phone,
-      address: parsed.address,
-      bundle: parsed.bundle,
-      quantity: parsed.quantity,
-      total,
-    },
-    select: { id: true },
-  });
+  const data = parsed.data;
+  const bundle = data.bundle as 1 | 2 | 3;
+
+  const unitPrice = PRICES[bundle];
+  const total = unitPrice * data.quantity;
+
+  let order;
+  try {
+    order = await prisma.order.create({
+      data: {
+        firstName: data.firstName,
+        phone: data.phone,
+        address: data.address,
+        bundle: data.bundle,
+        quantity: data.quantity,
+        total,
+      },
+      select: { id: true },
+    });
+  } catch (error) {
+    console.error("Failed to create order:", error);
+    return {
+      ok: false,
+      error: "حدث خطأ أثناء إنشاء الطلب. يرجى المحاولة مرة أخرى خلال لحظات.",
+    } satisfies CreateOrderState;
+  }
 
   // Upload to Taager using ACCOUNT_TWO with price reduced by 25
   const taagerPrice = unitPrice - 25;
   const taagerOrderData = {
     productId: "SA040107WT0099",
-    receiverName: parsed.firstName,
-    phoneNumber: parsed.phone,
+    receiverName: data.firstName,
+    phoneNumber: data.phone,
     province: "منطقة الرياض",
-    streetName: parsed.address,
-    cashOnDelivery: taagerPrice * parsed.quantity,
+    streetName: data.address,
+    cashOnDelivery: taagerPrice * data.quantity,
     items: [
       {
         productId: "SA040107WT0099",
-        quantity: parsed.quantity,
+        quantity: data.quantity,
         price: taagerPrice,
       },
     ],

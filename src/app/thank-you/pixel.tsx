@@ -13,9 +13,7 @@ export default function ThankYouPixel({
 }) {
   useEffect(() => {
     try {
-      // @ts-ignore
-      if (typeof window !== "undefined" && window.snaptr) {
-        // @ts-ignore
+      if (typeof window !== "undefined" && typeof window.snaptr === "function") {
         window.snaptr("track", "PURCHASE", {
           transaction_id: orderId,
           price: total,
