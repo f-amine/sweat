@@ -40,7 +40,7 @@ export default function RootLayout({
 					{`
 					try {
 					  snaptr('init', '586b0124-18f4-40da-abd5-ff7c40712ef4');
-					  snaptr('track', 'PAGE_VIEW');
+					  snaptr('track', 'PAGE_VIEW');	
 					} catch (e) { /* no-op */ }
 					`}
 				</Script>

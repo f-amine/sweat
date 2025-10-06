@@ -11,9 +11,9 @@ const PRICES: Record<
   Bundle,
   { current: number; compareAt?: number; badge?: string }
 > = {
-  1: { current: 10.0 },
-  2: { current: 15.0, badge: "أكثر مبيعا" },
-  3: { current: 17.0 },
+  1: { current: 169.0 },
+  2: { current: 199.0, compareAt: 338.0, badge: "أكثر مبيعا" },
+  3: { current: 249.0, compareAt: 507.0 },
 };
 
 export default function OrderForm({
@@ -53,14 +53,14 @@ export default function OrderForm({
     }
 
     // Fire Snap LEAD with normalized phone if available
-    // try {
-    //   if (typeof window !== "undefined" && typeof window.snaptr === "function") {
-    //     window.snaptr("track", "Purchase", {
-    //       user_phone_number:
-    //         result.isValid && result.phoneNumber ? result.phoneNumber : raw,
-    //     });
-    //   }
-    // } catch {}
+    try {
+      if (typeof window !== "undefined" && typeof window.snaptr === "function") {
+        window.snaptr("track", "LEAD", {
+          user_phone_number:
+            result.isValid && result.phoneNumber ? result.phoneNumber : raw,
+        });
+      }
+    } catch {}
 
     // Continue to server action
     return formAction(formData);

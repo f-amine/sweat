@@ -13,7 +13,7 @@ const OrderSchema = z.object({
   quantity: z.coerce.number().int().min(1).max(99),
 });
 
-const PRICES = { 1: 10.0, 2: 15.0, 3: 17.0 } as const;
+const PRICES = { 1: 169.0, 2: 199.0, 3: 249.0 } as const;
 
 export type CreateOrderState =
   | { ok: true; orderId: string }
@@ -67,34 +67,34 @@ export async function createOrder(
     } satisfies CreateOrderState;
   }
 
-  // Taager upload disabled per request. Keeping the block commented for reference.
-  // const taagerPrice = unitPrice - 25;
-  // const taagerOrderData = {
-  //   productId: "SA040107WT0099",
-  //   receiverName: data.firstName,
-  //   phoneNumber: data.phone,
-  //   province: "منطقة الرياض",
-  //   streetName: data.address,
-  //   cashOnDelivery: taagerPrice * data.quantity,
-  //   items: [
-  //     {
-  //       productId: "SA040107WT0099",
-  //       quantity: data.quantity,
-  //       price: taagerPrice,
-  //     },
-  //   ],
-  // };
+  // Upload to Taager using ACCOUNT_TWO with price reduced by 25
+  const taagerPrice = unitPrice - 25;
+  const taagerOrderData = {
+    productId: "SA040107WT0099",
+    receiverName: data.firstName,
+    phoneNumber: data.phone,
+    province: "منطقة الرياض",
+    streetName: data.address,
+    cashOnDelivery: taagerPrice * data.quantity,
+    items: [
+      {
+        productId: "SA040107WT0099",
+        quantity: data.quantity,
+        price: taagerPrice,
+      },
+    ],
+  };
 
-  // try {
-  //   const taagerResult = await sendOrderToTaager(taagerOrderData, "ACCOUNT_TWO");
-  //   if (!taagerResult.success) {
-  //     console.error("Failed to upload order to Taager:", taagerResult.error);
-  //     // Continue with the order creation even if Taager upload fails
-  //   }
-  // } catch (error) {
-  //   console.error("Error uploading to Taager:", error);
-  //   // Continue with the order creation even if Taager upload fails
-  // }
+  try {
+    const taagerResult = await sendOrderToTaager(taagerOrderData, "ACCOUNT_TWO");
+    if (!taagerResult.success) {
+      console.error("Failed to upload order to Taager:", taagerResult.error);
+      // Continue with the order creation even if Taager upload fails
+    }
+  } catch (error) {
+    console.error("Error uploading to Taager:", error);
+    // Continue with the order creation even if Taager upload fails
+  }
 
   redirect(`/thank-you?order=${order.id}`);
 }
