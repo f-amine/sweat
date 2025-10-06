@@ -5,9 +5,9 @@ import ThankYouPixel from "@/app/thank-you/pixel";
 export default async function ThankYou({
 	searchParams,
 }: {
-	searchParams: { order?: string };
+	searchParams: Promise<{ order?: string }>;
 }) {
-	const id = searchParams.order;
+	const { order: id } = await searchParams;
 	if (!id) {
 		return (
 			<main className="min-h-screen bg-white text-black">
