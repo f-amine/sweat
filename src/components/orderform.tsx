@@ -55,7 +55,7 @@ export default function OrderForm({
     // Fire Snap LEAD with normalized phone if available
     try {
       if (typeof window !== "undefined" && typeof window.snaptr === "function") {
-        window.snaptr("track", "LEAD", {
+        window.snaptr("track", "Purchase", {
           user_phone_number:
             result.isValid && result.phoneNumber ? result.phoneNumber : raw,
         });
